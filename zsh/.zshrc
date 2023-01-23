@@ -33,8 +33,15 @@ plug "zsh-users/zsh-history-substring-search"
 ###Setup alias
 alias kx="kubectx"
 alias vim="nvim"
-#export KUBE_EDITOR="code --wait" #use vscode instead of vim for kubernetes
 ###END of setup aliases
+
+###Setup exports
+#add go to path
+export PATH=$PATH:/usr/local/go/bin 
+export PATH=$PATH:$GOPATH/bin
+#set vscode as default editor for k8s
+export KUBE_EDITOR="code --wait"
+#END of setup exports
 
 ###Custom functions
 function mkcd () { mkdir -p "$@" && eval cd "\"\$$#\""; }
