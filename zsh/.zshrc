@@ -6,8 +6,14 @@ fi
 
 #Auto added by the zap installer to init zap
 [ -f "$HOME/.local/share/zap/zap.zsh" ] && source "$HOME/.local/share/zap/zap.zsh"
-
 ###END of download and init zap plugin manager
+
+###Auto added by Google Cloud SDK
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/lukas.monkevicius/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/lukas.monkevicius/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/lukas.monkevicius/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/lukas.monkevicius/google-cloud-sdk/completion.zsh.inc'; fi
+# The next line enables shell command completion for gcloud.
+###END of auto added by Google Cloud SDK
 
 ###Load version control information copied from https://stackoverflow.com/a/65540755
 autoload -Uz vcs_info
