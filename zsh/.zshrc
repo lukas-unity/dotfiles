@@ -51,6 +51,14 @@ export KUBE_EDITOR="code --wait"
 
 ###Custom functions
 function mkcd () { mkdir -p "$@" && eval cd "\"\$$#\""; }
+function kdiff() {
+  overlay="${1}"
+  kustomize build ${overlay} \
+    | kubectl diff -f - ${@:2} \
+    | sed '/kubectl.kubernetes.io\/last-applied-configuration/,+1 d' \
+    | sed -r "s/(^\+[^\+].*|^\+$)/$(printf '\e[0;32m')\1$(printf '\e[0m')/g" \
+    | sed -r "s/(^\-[^\-].*|^\-$)/$(printf '\e[0;31m')\1$(printf '\e[0m')/g"
+}
 ###END of custom functions
 
 
