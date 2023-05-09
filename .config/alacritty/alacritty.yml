@@ -1,0 +1,46 @@
+env:
+  TERM: alacritty
+window:
+  dimensions:
+    columns: 92
+    lines: 28
+  decorations: full
+  opacity: 0.98
+  startup_mode: Windowed
+  title: Terminal
+  dynamic_title: true
+scrolling:
+  history: 10000
+font:
+  normal:
+    family: SauceCodePro Nerd Font
+    style: Regular
+  size: 15
+
+
+#Set Arthur theme
+colors:
+  primary:
+    background: '#252525'
+    foreground: '#e3f0e3'
+
+  normal:
+    black:   '#4e4437'
+    red:     '#d8726e'
+    green:   '#96ba92'
+    yellow:  '#edbb6d'
+    blue:    '#76a8f0'
+    magenta: '#e5c498'
+    cyan:    '#bdcfe4'
+    white:   '#c7b8a9'
+
+  bright:
+    black:   '#685655'
+    red:     '#d76a41'
+    green:   '#98b52c'
+    yellow:  '#ffb56f'
+    blue:    '#96d7ef'
+    magenta: '#aa7800'
+    cyan:    '#bdcfe4'
+    white:   '#e3d5c7'
+###END of set Arthur theme 

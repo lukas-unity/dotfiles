@@ -25,7 +25,7 @@ zstyle ':vcs_info:git:*' formats ':%F{green}%b%f'
 # set up the prompt
 setopt PROMPT_SUBST
 PROMPT='%F{blue}%1~%f${vcs_info_msg_0_} $ '
-RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]" # Added by me to have time and date on the right side
+RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]" # time and date on the right side
 autoload -Uz compinit && compinit
 ###END of load version control information 
 
@@ -90,4 +90,5 @@ alias history="history 0"
 ###Bind keys for substring search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
 ###END of bind keys for substring search
