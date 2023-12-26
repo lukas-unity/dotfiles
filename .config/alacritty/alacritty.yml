@@ -1,3 +1,12 @@
+shell:
+ program: /usr/local/bin/tmux 
+ args:
+   - new-session
+   - -A
+   - -D
+   - -s
+   - main
+
 env:
   TERM: alacritty
 window:
@@ -5,7 +14,6 @@ window:
     columns: 92
     lines: 28
   decorations: full
-  opacity: 0.98
   startup_mode: Windowed
   title: Terminal
   dynamic_title: true
@@ -17,30 +25,33 @@ font:
     style: Regular
   size: 15
 
+# word jump with arrows
+key_bindings:
+  - { key: Right, mods: Alt, chars: "\x1BF" }
+  - { key: Left,  mods: Alt, chars: "\x1BB" }
 
-#Set Arthur theme
+# Gruvbox Material Dark Medium
 colors:
   primary:
-    background: '#252525'
-    foreground: '#e3f0e3'
+    background: '0x282828'
+    foreground: '0xdfbf8e'
 
   normal:
-    black:   '#4e4437'
-    red:     '#d8726e'
-    green:   '#96ba92'
-    yellow:  '#edbb6d'
-    blue:    '#76a8f0'
-    magenta: '#e5c498'
-    cyan:    '#bdcfe4'
-    white:   '#c7b8a9'
+    black:   '0x665c54'
+    red:     '0xea6962'
+    green:   '0xa9b665'
+    yellow:  '0xe78a4e'
+    blue:    '0x7daea3'
+    magenta: '0xd3869b'
+    cyan:    '0x89b482'
+    white:   '0xdfbf8e'
 
   bright:
-    black:   '#685655'
-    red:     '#d76a41'
-    green:   '#98b52c'
-    yellow:  '#ffb56f'
-    blue:    '#96d7ef'
-    magenta: '#aa7800'
-    cyan:    '#bdcfe4'
-    white:   '#e3d5c7'
-###END of set Arthur theme 
+    black:   '0x928374'
+    red:     '0xea6962'
+    green:   '0xa9b665'
+    yellow:  '0xe3a84e'
+    blue:    '0x7daea3'
+    magenta: '0xd3869b'
+    cyan:    '0x89b482'
+    white:   '0xdfbf8e'
