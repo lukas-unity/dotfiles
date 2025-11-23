@@ -16,10 +16,11 @@ window-width = 120
 window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
-scrollback-limit = 100000000
+scrollback-limit = 10000000
 copy-on-select = true
 window-vsync = true
 window-save-state = always
+window-inherit-working-directory = false
 
 # --- macOS Specific ---
 macos-titlebar-style = tabs

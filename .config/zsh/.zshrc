@@ -11,12 +11,6 @@ export KUBE_EDITOR="cursor --wait"
 # 2. Go path configuration
 export PATH="$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
 
-# 3. Custom LiteLLM endpoint for Claude Code
-unset CLAUDE_CODE_USE_BEDROCK
-export ANTHROPIC_BASE_URL="https://xxxx"
-export ANTHROPIC_AUTH_TOKEN="sk-xxxxx"
-export ANTHROPIC_MODEL="anthropic.claude-sonnet-4-20250514-v1:0"
-
 # ====================================================
 #                  ZAP PLUGIN MANAGER
 # ====================================================
@@ -43,10 +37,8 @@ autoload -Uz vcs_info
 autoload -Uz add-zsh-hook
 zmodload zsh/stat
 
-# Git format for git status
-zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:git:*' formats ' %F{240}on %b%u%c%f'
-zstyle ':vcs_info:git:*' actionformats ' %F{240}on %b|%a%u%c%f'
+# Git branch format
+zstyle ':vcs_info:git:*' formats ':%F{green}%b%f'
 
 function update_git_info() { vcs_info; }
 
@@ -100,6 +92,7 @@ setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS
 setopt HIST_VERIFY
@@ -123,4 +116,4 @@ alias ll="ls -lah"
 function mkcd () { mkdir -p "$@" && eval cd "\"\$$#\""; }
 
 # Disable beeps
-setopt NO_BEEP 
+setopt NO_BEEP
