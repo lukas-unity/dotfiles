@@ -1,94 +1,126 @@
-### Download and init zap plugin manager
-# download zap if doesn't exist already
+# ====================================================
+#                 ENVIRONMENT & PATH
+# ====================================================
+typeset -U PATH # Prevent duplicate PATH entries
+
+# 1. Editors & Language
+export EDITOR="cursor --wait"
+export VISUAL="cursor --wait"
+export KUBE_EDITOR="cursor --wait"
+
+# 2. Go path configuration
+export PATH="$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
+
+# 3. Custom LiteLLM endpoint for Claude Code
+unset CLAUDE_CODE_USE_BEDROCK
+export ANTHROPIC_BASE_URL="https://xxxx"
+export ANTHROPIC_AUTH_TOKEN="sk-xxxxx"
+export ANTHROPIC_MODEL="anthropic.claude-sonnet-4-20250514-v1:0"
+
+# ====================================================
+#                  ZAP PLUGIN MANAGER
+# ====================================================
 if [ ! -f "$HOME/.local/share/zap/zap.zsh" ]; then
-    zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh)
+    mkdir -p "$HOME/.local/share/zap"
+    git clone https://github.com/zap-zsh/zap.git "$HOME/.local/share/zap"
 fi
-
-#Auto added by the zap installer to init zap
 [ -f "$HOME/.local/share/zap/zap.zsh" ] && source "$HOME/.local/share/zap/zap.zsh"
-###END of download and init zap plugin manager
 
-###Auto added by Google Cloud SDK
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/lukas.monkevicius/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/lukas.monkevicius/google-cloud-sdk/path.zsh.inc'; fi
-if [ -f '/Users/lukas.monkevicius/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/lukas.monkevicius/google-cloud-sdk/completion.zsh.inc'; fi
-# The next line enables shell command completion for gcloud.
-###END of auto added by Google Cloud SDK
-
-###Load version control information copied from https://stackoverflow.com/a/65540755
-autoload -Uz vcs_info
-precmd() { vcs_info }
-
-# format vcs_info variable
-zstyle ':vcs_info:git:*' formats ':%F{green}%b%f'
-
-# set up the prompt
-setopt PROMPT_SUBST
-PROMPT='%F{blue}%1~%f${vcs_info_msg_0_} $ '
-RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]" # time and date on the right side
-autoload -Uz compinit && compinit
-###END of load version control information 
-
-###Install pluins
+# --- Plugins ---
 plug "zsh-users/zsh-autosuggestions"
-plug "zsh-users/zsh-syntax-highlighting"
 plug "MichaelAquilina/zsh-you-should-use"
 plug "zsh-users/zsh-history-substring-search"
-###END of install plugins
+plug "zsh-users/zsh-syntax-highlighting" # Needs to be loaded last
 
-###Setup alias
-alias kx="kubectx"
-alias vim="nvim"
-###END of setup aliases
+# --- Completion ---
+autoload -Uz compinit && compinit
 
-###Setup exports
-#add go to path
-export PATH=$PATH:/usr/local/go/bin 
-export PATH=$PATH:$GOPATH/bin
-#set vscode as default editor for k8s
-export KUBE_EDITOR="code --wait"
-#END of setup exports
+# ====================================================
+#              TERMINAL TITLE & GIT INFO
+# ====================================================
+setopt PROMPT_SUBST
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
+zmodload zsh/stat
 
-###Custom functions
-function mkcd () { mkdir -p "$@" && eval cd "\"\$$#\""; }
-function kdiff() {
-  overlay="${1}"
-  kustomize build ${overlay} \
-    | kubectl diff -f - ${@:2} \
-    | sed '/kubectl.kubernetes.io\/last-applied-configuration/,+1 d' \
-    | sed -r "s/(^\+[^\+].*|^\+$)/$(printf '\e[0;32m')\1$(printf '\e[0m')/g" \
-    | sed -r "s/(^\-[^\-].*|^\-$)/$(printf '\e[0;31m')\1$(printf '\e[0m')/g"
+# Git format for git status
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:git:*' formats ' %F{240}on %b%u%c%f'
+zstyle ':vcs_info:git:*' actionformats ' %F{240}on %b|%a%u%c%f'
+
+function update_git_info() { vcs_info; }
+
+# Cache kubectl availability at shell startup
+typeset -g HAS_KUBECTL=0
+command -v kubectl &>/dev/null && HAS_KUBECTL=1
+
+function update_terminal_title() {
+    local conf="${KUBECONFIG:-$HOME/.kube/config}"
+    conf="${conf%%:*}"
+    local k8s_clean="$CACHED_K8S_CONTEXT"
+    
+    if [[ "$HAS_KUBECTL" -eq 1 ]] && [[ -f "$conf" ]]; then
+        local -A fstat
+        zstat -H fstat "$conf" 2>/dev/null || return
+        
+        if [[ "$fstat[mtime]" != "$CACHED_KUBE_MTIME" ]]; then
+            local raw=$(kubectl config current-context 2>/dev/null)
+            k8s_clean="${raw##*_}"
+            
+            export CACHED_K8S_CONTEXT="$k8s_clean"
+            export CACHED_KUBE_MTIME="$fstat[mtime]"
+        fi
+    fi
+    
+    local new_title="${k8s_clean:-${PWD##*/}}"
+    [[ "$new_title" != "$LAST_TERM_TITLE" ]] || return
+    
+    print -n "\e]0;${new_title}\a"
+    export LAST_TERM_TITLE="$new_title"
 }
-###END of custom functions
 
+add-zsh-hook precmd update_git_info
+add-zsh-hook precmd update_terminal_title
+update_terminal_title
 
-###Setup history from https://a4z.gitlab.io/blog/2021/05/22/Unlimited-shell-history-and-completion.html
-#use a history file in here
+# ====================================================
+#               PROMPT & HISTORY
+# ====================================================
+PROMPT='%F{blue}%1~%f${vcs_info_msg_0_} $ '
+RPROMPT=''
+
+# --- UNLIMITED HISTORY  ---
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
-# make it huge, really huge.
-SAVEHIST=1000000
 HISTSIZE=1000000
+SAVEHIST=1000000
 
-# there is for sure still some redundancy, but ...
-# setopt BANG_HIST                 # Treat the '!' character specially during expansion.
-# setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
-setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
-setopt SHARE_HISTORY             # Share history between all sessions.
-setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
-setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
-setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
-setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
-setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
-setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
-setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
-#setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
-#setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
 
 alias history="history 0"
-###END of setup history
 
-###Bind keys for substring search
+# --- KEYBINDINGS ---
+bindkey "${terminfo[kcuu1]}" history-substring-search-up
+bindkey "${terminfo[kcud1]}" history-substring-search-down
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-###END of bind keys for substring search
+# ====================================================
+#               ALIASES & FUNCTIONS
+# ====================================================
+alias kx="kubectx"
+alias code="cursor"
+alias ls="ls -G"
+alias ll="ls -lah"
+
+function mkcd () { mkdir -p "$@" && eval cd "\"\$$#\""; }
+
+# Disable beeps
+setopt NO_BEEP 

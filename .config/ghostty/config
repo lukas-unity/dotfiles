@@ -1,0 +1,66 @@
+# ====================================================
+#              VISUALS & THEME
+# ====================================================
+shell-integration-features = no-title
+theme = "Cursor Dark"
+
+# --- Typography ---
+font-family = "Cascadia Code"
+font-style = "Regular"
+font-size = 14.0
+font-thicken = true
+
+# --- Geometry & Behavior ---
+window-height = 20
+window-width = 120
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+scrollback-limit = 100000000
+copy-on-select = true
+window-vsync = true
+window-save-state = always
+
+# --- macOS Specific ---
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+window-colorspace = display-p3
+quick-terminal-screen = macos-menu-bar
+keybind = global:ctrl+space=toggle_quick_terminal
+quick-terminal-size = 360px, 1900px
+
+# ====================================================
+#              TMUX BINDINGS (Leader: Ctrl+a)
+# ====================================================
+
+# Tabs
+keybind = ctrl+a>c=new_tab
+keybind = ctrl+a>1=goto_tab:1
+keybind = ctrl+a>2=goto_tab:2
+keybind = ctrl+a>3=goto_tab:3
+keybind = ctrl+a>4=goto_tab:4
+keybind = ctrl+a>5=goto_tab:5
+
+# Splits
+keybind = ctrl+a>shift+five=new_split:right
+keybind = ctrl+a>shift+quote=new_split:down
+
+# Navigation
+keybind = ctrl+a>up=goto_split:up
+keybind = ctrl+a>down=goto_split:down
+keybind = ctrl+a>left=goto_split:left
+keybind = ctrl+a>right=goto_split:right
+
+# Resize
+keybind = ctrl+a>shift+up=resize_split:up,20
+keybind = ctrl+a>shift+down=resize_split:down,20
+keybind = ctrl+a>shift+left=resize_split:left,20
+keybind = ctrl+a>shift+right=resize_split:right,20
+
+# Utilities
+keybind = ctrl+a>x=close_surface
+keybind = ctrl+a>s=write_scrollback_file:open
+keybind = ctrl+a>comma=prompt_surface_title
+
+# Literal Ctrl+A
+keybind = ctrl+a>ctrl+a=text:\x01
